@@ -3,10 +3,34 @@
 <head>
     <title>Product List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    #search-bar
+    {
+    display:flex;
+    }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <a th:href="@{/addProductForm}" class="btn btn-primary mb-3"> Add Product</a>
+    <a th:href="@{/addProductForm}" class="btn btn-primary mb-4"> Add Product</a>
+    
+    <form method="get" action="/searchproducts" id="searchForm" class="row mb-4">
+    <div id = "search-bar" class="col-md-4">
+        <input type="text" name="title" class="form-control" placeholder="Search by title" th:value="${param.title}" />
+        <input  type="submit" value="search" class="btn btn-secondary">
+    </div>
+	</form>
+      
+      
+     <form method="get" action="/filterProducts" id="filterForm" class="row mb-4">
+		<div class="col-md-4">
+			<select name="category" class="form-control" onchange="document.getElementById('filterForm'). submit()">
+				<option value="">All Categories </option>
+				<option th:each="cat: ${categories}" th:value="${cat}"				
+						th:text="${cat}" th:selected="${param.category} == ${cat}"></option>
+			</select>
+      </div>
+      </form>
     <h2 class="mb-4">List of Products</h2>
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
@@ -28,12 +52,12 @@
             
             <!-- ✅ Update Button -->
             <td>
-                <a th:href="@{'/updateProductForm/' + ${product.productId}}" class="btn btn-warning btn-sm">Update</a>
+                <a th:href="@{'/updateProductForm/' + ${product.productId}}" class="btn btn-warning btn-sm"><svg height="64px" width="64px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#98D96F;" d="M142.366,74.405l-37.203,220.449L142.366,512h270.979c16.952,0,30.693-13.741,30.693-30.692V107.859 L142.366,74.405z"></path> <path style="fill:#8FCC68;" d="M67.962,74.405v406.903c0,16.951,13.741,30.692,30.693,30.692h43.711V74.405H67.962z"></path> <path style="fill:#FFFFFF;" d="M126.661,20.763l-11.161,33.731c-4.137,5.568-6.588,12.458-6.588,19.911s2.452,14.343,6.588,19.909 l11.161,33.732l317.377-20.185v-0.002v-66.91L126.661,20.763z"></path> <path style="fill:#A5EB78;" d="M142.366,40.949h301.671V0H142.366c-41.092,0-74.404,33.312-74.404,74.404v0.001 c0,41.092,33.312,74.404,74.404,74.404h301.671V107.86H142.366c-18.448,0-33.455-15.007-33.455-33.455 S123.919,40.949,142.366,40.949z"></path> <path style="fill:#FFFFFF;" d="M411.686,316.301c0,66.035-53.724,119.758-119.758,119.758c-19.51,0-38.557-4.773-55.588-13.718 l-11.324,17.113l-36.907-73.013l81.63,5.426l-11.759,17.771c10.561,4.902,22.125,7.515,33.947,7.515 c44.582,0,80.853-36.27,80.853-80.853s-36.27-80.853-80.853-80.853s-80.853,36.27-80.853,80.853h-38.906 c0-66.035,53.724-119.759,119.758-119.759S411.686,250.265,411.686,316.301z"></path> </g></svg></a>
             </td>
             <!-- ✅ Delete Button -->
             <td>
                 <a th:href="@{'/deleteProduct/' + ${product.productId}}" class="btn btn-danger btn-sm"
-                   onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+                   onclick="return confirm('Are you sure you want to delete this product?');"><svg width="64px" height="64px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M154 260h568v700H154z" fill="#FF3B30"></path><path d="M624.428 261.076v485.956c0 57.379-46.737 103.894-104.391 103.894h-362.56v107.246h566.815V261.076h-99.864z" fill="#030504"></path><path d="M320.5 870.07c-8.218 0-14.5-6.664-14.5-14.883V438.474c0-8.218 6.282-14.883 14.5-14.883s14.5 6.664 14.5 14.883v416.713c0 8.219-6.282 14.883-14.5 14.883zM543.5 870.07c-8.218 0-14.5-6.664-14.5-14.883V438.474c0-8.218 6.282-14.883 14.5-14.883s14.5 6.664 14.5 14.883v416.713c0 8.219-6.282 14.883-14.5 14.883z" fill="#152B3C"></path><path d="M721.185 345.717v-84.641H164.437z" fill="#030504"></path><path d="M633.596 235.166l-228.054-71.773 31.55-99.3 228.055 71.773z" fill="#FF3B30"></path><path d="M847.401 324.783c-2.223 0-4.475-0.333-6.706-1.034L185.038 117.401c-11.765-3.703-18.298-16.239-14.592-27.996 3.706-11.766 16.241-18.288 27.993-14.595l655.656 206.346c11.766 3.703 18.298 16.239 14.592 27.996-2.995 9.531-11.795 15.631-21.286 15.631z" fill="#FF3B30"></path></g></svg></a>
             </td>
         </tr>
         </tbody>

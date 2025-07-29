@@ -1,5 +1,6 @@
 package com.kiit.myFirstSpringboot.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kiit.myFirstSpringboot.exception.ProductNotFoundException;
 import com.kiit.myFirstSpringboot.model.Product;
@@ -40,11 +42,69 @@ public class ProductControllerFE {
 	
 	private static final Logger logger= Logger.getLogger(ProductControllerFE.class);
 	
-	@RequestMapping("/showProducts")
+	@RequestMapping("/")
 	public String showProducts(Model model)
 	{
 		List<Product> products=productService.getProducts();
+		List<String> categories=productService.getCategories();
+		categories.add("All");
 		model.addAttribute("products",products);
+		model.addAttribute("categories",categories);
+		return "AllProducts";   //html file - name of the html file 
+	}
+	
+	@RequestMapping("/searchproducts")
+	public String searchProducts(@RequestParam("title") String title, Model model)
+	{
+		List<Product> allproducts=productService.getProducts();
+		List<Product> selectProducts= new ArrayList();
+		
+		for(Product product:allproducts)
+		{
+			if(product.getProductTitle().toLowerCase().contains(title.toLowerCase()))
+			{
+				selectProducts.add(product);
+			}
+
+		}
+		model.addAttribute("products",selectProducts);
+		List<String> categories=productService.getCategories();
+		categories.add("All");
+		model.addAttribute("categories",categories);
+		return "AllProducts";   //html file - name of the html file 
+	}
+	
+	
+	@RequestMapping("/filterProducts")
+	public String filterProducts(@RequestParam("category") String category, Model model)
+	{
+		List<Product> allproducts=productService.getProducts();
+		List<Product> filteredProducts= new ArrayList();
+		
+		
+		if(category.equalsIgnoreCase("all"))
+		{
+			model.addAttribute("products",allproducts);
+			List<String> categories=productService.getCategories();
+			categories.add("All");
+			model.addAttribute("products",allproducts);
+			model.addAttribute("categories",categories);
+			return "AllProducts";
+		}
+		
+		
+		for(Product product:allproducts)
+		{
+			if(product.getProductCategory().toLowerCase().contains(category.toLowerCase()))
+			{
+				filteredProducts.add(product);
+			}
+
+		}
+		model.addAttribute("products",filteredProducts);
+		List<String> categories=productService.getCategories();
+		categories.add("All");
+		model.addAttribute("categories",categories);
 		return "AllProducts";   //html file - name of the html file 
 	}
 	
@@ -120,6 +180,20 @@ public class ProductControllerFE {
 		Page<Product> productPage= productService.getProductByPagination(pageNumber,pageSize);
 		return new ResponseEntity <Page<Product>> (productPage ,HttpStatus.OK);	
 	}
+	
+	@RequestMapping("/403")
+		public ModelAndView accesssDenied(Principal user) {
+		    ModelAndView model = new ModelAndView();
+
+		    if (user != null) {
+		        model.addObject("msg", "Hi " + user.getName() + ", you do not have permission to access this page!");
+		    } else {
+		        model.addObject("msg", "You do not have permission to access this page!");
+		    }
+
+		    model.setViewName("403");
+		    return model;
+		}
 }
 
 
